@@ -1,4 +1,4 @@
-class Ball{
+class Ball implements Showable{
   
   
   
@@ -7,9 +7,9 @@ PVector location;  // Location of shape
 PVector velocity;  // Velocity of shape
 PVector gravity;   // Gravity acts at the shape's acceleration
 
-BeatDetect beat;
+
 public Ball() {
-  beat = new BeatDetect();
+
   location = new PVector(100,100);
   velocity = new PVector(1.5,2.1);
   gravity = new PVector(0,0.2);
@@ -18,6 +18,7 @@ public Ball() {
 }
 
 void show() {
+  colorMode(RGB);
   background(0);
   fill(255,0,255);
   //box(255);
@@ -58,15 +59,15 @@ void checkEdge(){
    
  
  for(int i = 0; i < jingle.bufferSize() - 1; i++)
-    {
-      
+    { 
       stroke(a);
       strokeWeight(2);
       float x1 = map( i, 0, jingle.bufferSize(), 0, width/16);
       float x2 = map( i+1, 0, jingle.bufferSize(), 0, width/16 );
-      line( x+ x1, jingle.mix.get(i)*50, y+ x2, 50 + jingle.mix.get(i+1)*50 );
+      line( x+ x1, jingle.mix.get(i)*50, y+ x2, 50 + jingle.mix.get(i+1)*50);
       //line( x1, jingle.right.get(i)*50, x2, 150 + jingle.right.get(i+1)*50 );
     }
+    
     
  }
  

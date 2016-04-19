@@ -1,4 +1,10 @@
 
+//geomitrive stuff
+import geomerative.*;
+
+
+import processing.opengl.*;
+import java.util.*;
 import peasy.*;
 import peasy.org.apache.commons.math.*;
 import peasy.org.apache.commons.math.geometry.*;
@@ -24,138 +30,77 @@ import ddf.minim.*;
 Minim       minim;
 AudioPlayer jingle;
 FFT         fft;
+BeatDetect beat;
 PeasyCam camera;
 Psphere psphere;
 Lines line;
+Spiral spiral;
 Ball ball;
+Spect spect;
+Circle circle;
+Circle msphere;
+Waterfall w;
+BoxSpiral boxSpiral;
 
-int inc=0;
+int i=0;
+ArrayList<Showable> visuals = new ArrayList<Showable>();
+
+
+
 
 void setup()
-{
+{ 
+  
+  
+   
+   RG.init(this);
   colorMode(RGB);
-  size(512, 200, P3D);
-  //noCursor();
-  camera = new PeasyCam(this, 0, 0, 0, 120);
+  size(512, 200, OPENGL);
+  //make all the objects
+  camera = new PeasyCam(this, 0, 0, 0, 600);
   
   minim = new Minim(this);
+  beat = new BeatDetect();
   psphere = new Psphere(200);
   line = new Lines();
+  spiral= new Spiral();
   ball = new Ball();
+  spect = new Spect();
+  circle = new Circle();
+  msphere= new Circle(180,color(255,0,255,52));
+  w= new Waterfall();
+   spiral = new Spiral();
+   boxSpiral= new BoxSpiral();
+  Collections.addAll(visuals,circle,spect,line,ball,msphere,w,spiral,psphere,boxSpiral);
   
-  // specify that we want the audio buffers of the AudioPlayer
-  // to be 1024 samples long because our FFT needs to have 
-  // a power-of-two buffer size and this is a good size.
-  //jingle = minim.loadFile("jingle.mp3", 1024);
+  jingle = minim.loadFile("The Robots.mp3", 1024);
   //jingle = minim.loadFile("Cissy Strut.mp3", 1024);
-  jingle = minim.loadFile("Autobahn.mp3", 1024);
-  // loop the file indefinitely
+  //jingle = minim.loadFile("Autobahn.mp3", 1024);
+  //jingle = minim.loadFile("05 - Lectro Spektral Daze - Farther From Ordinary Reality.mp3", 1024);
   jingle.loop();
-  
-  // create an FFT object that has a time-domain buffer 
-  // the same size as jingle's sample buffer
-  // note that this needs to be a power of two 
-  // and that it means the size of the spectrum will be half as large.
   fft = new FFT( jingle.bufferSize(), jingle.sampleRate() );
-  box(255);
-  
+  lights();
 }
 
 void draw()
 {
-
+   visuals.get(i).show();
   
-  
-  if(key=='1')
-  {
-   line.show();
-   
-  }else if(key=='2')
-  {
-   spect();
-   
-    }else if(key=='3')
-  {
-   psphere.show();
-   }else if(key=='4')
-  {
-   ball.show();
-  
-  }else if(key=='5')
-  {
-   sph(); 
-  }
-   
- else 
- {
-   
-  background(0); 
-  stroke(255);
- circle(); }
-  
-inc++;
 }
 
-
-
-void spect(){
-  background(0);
-  stroke(255);
+void keyPressed(){
   
-  // perform a forward FFT on the samples in jingle's mix buffer,
-  // which contains the mix of both the left and right channels of the file
-  fft.forward( jingle.mix );
-  
-  for(int i = 0; i < fft.specSize(); i++)
-  {
-
-    float c = map(i,0,fft.specSize(),255,0);
+  if(key=='a'&& i>0){
+   i--; 
     
-     stroke(15,c,200);
-    // draw the line for frequency band i, scaling it up a bit so we can see it
-    line( i, height,i, height - fft.getBand(i)*8);
-    line( -1*i, height,i*-1, height  - fft.getBand(i)*-8); // mirriors to opostie quadrant  
+  }
+  else if(key=='d'&&i<visuals.size()-1){
+    
+   i++; 
   }
   
   
 }
-
-
-  
-  void circle(){
-    
-    
-    
-   strokeWeight(2);
-   float a = 0;
-   float angle = (2*PI)/ 200;
-   int step = jingle.bufferSize() / 200;
-   for(int i=0; i < jingle.bufferSize() - step; i+=step) {
-    float x =  cos(a) * (40 * jingle.mix.get(i) + 60);
-    float y = sin(a) * (40 * jingle.mix.get(i) + 60);
-    float x2 = cos(a + angle) * (40 * jingle.mix.get(i+step) + 60);
-    float y2 = sin(a + angle) * (40 * jingle.mix.get(i+step) + 60);
-    line(x,y,x2,y2);
-    a += angle; 
-    
-    
-  }
- }
- 
- 
- void sph(){
-   background(0);
-   
-   for(int r=0;r<360;r+=1){
-    rotateX(radians(r));
-    circle(); 
-   }
-   
-    
- }
-  
-  
-
 
 void stop()
 {
